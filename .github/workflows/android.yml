@@ -5,11 +5,6 @@ on:
     branches: ["master", "main"]
   workflow_dispatch:
 
-env:
-  GODOT_VERSION: 3.2.3
-  EXPORT_NAME: LuoKaiOpenWorld
-  PROJECT_PATH: .
-
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -22,14 +17,11 @@ jobs:
       - name: Setup export templates
         run: |
           mkdir -p ~/.local/share/godot/export_templates/
-          mkdir -p ~/.config/
-          mv /root/.config/godot ~/.config/godot || true
-          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable || true
+          mv /root/.local/share/godot/export_templates/3.2.3.stable ~/.local/share/godot/export_templates/3.2.3.stable || true
       - name: Build Android APK
         run: |
           mkdir -p build/android
-          cd $PROJECT_PATH
-          godot --headless --verbose --export "Android" "build/android/${EXPORT_NAME}.apk"
+          godot --headless --verbose --export "Android" "build/android/LuoKaiOpenWorld.apk"
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk
