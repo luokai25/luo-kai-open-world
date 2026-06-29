@@ -1,4 +1,166 @@
 [gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://scripts/core/main.gd" type="Script" id=1]
-[ext_resource path="res://scripts/core
+[ext_resource path="res://scripts/core/game.gd" type="Script" id=2]
+[ext_resource path="res://scripts/ui/hud.gd" type="Script" id=3]
+[ext_resource path="res://scripts/ui/touch_controls.gd" type="Script" id=4]
+[ext_resource path="res://scripts/player/player_camera.gd" type="Script" id=5]
+[ext_resource path="res://scripts/enemies/qi_spirit.gd" type="Script" id=6]
+[ext_resource path="res://scripts/world/zone.gd" type="Script" id=7]
+[ext_resource path="res://scripts/npcs/npc_request.gd" type="Script" id=8]
+[ext_resource path="res://scripts/world/world_state.gd" type="Script" id=9]
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 50, 1, 50 )
+[sub_resource type="PlaneMesh" id=2]
+size = Vector2( 100, 100 )
+
+[node name="Main" type="Node"]
+script = ExtResource( 1 )
+
+[node name="World" type="Spatial" parent="."]
+script = ExtResource( 7 )
+zone_name = "Spirit Forest"
+zone_level = 1
+qi_density = 1.4
+realm_theme = "mortal"
+landmark_names = ["Village Edge Gate", "Broken Spirit Bridge", "Moss Shrine", "Herb Slope", "Old Root Hollow", "Watch Rock"]
+ambient_tags = ["birds", "insects", "frog water", "wind leaves"]
+resource_nodes = ["herbs", "qi stones", "river reeds"]
+npc_roles = ["elder", "herb gatherer", "hunter", "villager"]
+weather_states = ["clear", "fog", "rain", "night mist"]
+
+[node name="WorldState" type="Node" parent="."]
+script = ExtResource( 9 )
+base_region_name = "Spirit Forest"
+
+[node name="Player" type="KinematicBody" parent="World"]
+script = ExtResource( 2 )
+translation = Vector3( 0, 2, 0 )
+
+[node name="Camera" type="Camera" parent="World/Player"]
+script = ExtResource( 5 )
+current = true
+
+[node name="Light" type="DirectionalLight" parent="World"]
+rotation_degrees = Vector3( -45, 30, 0 )
+
+[node name="Ground" type="StaticBody" parent="World"]
+translation = Vector3( 0, -1, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="World/Ground"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="World/Ground"]
+mesh = SubResource( 2 )
+
+[node name="Enemy" type="KinematicBody" parent="World"]
+script = ExtResource( 6 )
+translation = Vector3( 4, 1, -6 )
+
+[node name="NPC" type="Area" parent="World"]
+script = ExtResource( 8 )
+translation = Vector3( -4, 1, -2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="World/NPC"]
+shape = SubResource( 1 )
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource( 3 )
+
+[node name="HpLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 16 )
+text = "HP: 100 / 100"
+
+[node name="QiLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 40 )
+text = "Qi: 0 / 100"
+
+[node name="BodyLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 64 )
+text = "Body: 1 (Tier 1)"
+
+[node name="RealmLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 88 )
+text = "Realm: Mortal"
+
+[node name="ZoneLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 112 )
+text = "Spirit Forest | Lv 1 | Qi 1.4 | mortal"
+
+[node name="WorldLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 136 )
+text = "World: calm"
+
+[node name="LandmarkLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 160 )
+text = "Village Edge Gate • Broken Spirit Bridge • Moss Shrine • Herb Slope • Old Root Hollow • Watch Rock"
+
+[node name="DialogueLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 184 )
+text = "Talk to NPCs for requests"
+
+[node name="RequestLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 208 )
+text = "No request active"
+
+[node name="InventoryLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 232 )
+text = "Inventory: 2 items"
+
+[node name="InventoryDetails" type="Label" parent="HUD"]
+visible = false
+rect_position = Vector2( 16, 264 )
+rect_size = Vector2( 400, 240 )
+text = "Inventory empty"
+
+[node name="MessageLabel" type="Label" parent="HUD"]
+rect_position = Vector2( 16, 520 )
+text = "Ready"
+
+[node name="TouchControls" type="CanvasLayer" parent="."]
+script = ExtResource( 4 )
+
+[node name="AttackButton" type="Button" parent="TouchControls"]
+rect_position = Vector2( 1600, 820 )
+rect_size = Vector2( 180, 52 )
+text = "Attack"
+
+[node name="DodgeButton" type="Button" parent="TouchControls"]
+rect_position = Vector2( 1600, 878 )
+rect_size = Vector2( 180, 52 )
+text = "Dodge"
+
+[node name="InteractButton" type="Button" parent="TouchControls"]
+rect_position = Vector2( 1600, 936 )
+rect_size = Vector2( 180, 52 )
+text = "Interact"
+
+[node name="CultivateButton" type="Button" parent="TouchControls"]
+rect_position = Vector2( 1600, 994 )
+rect_size = Vector2( 180, 52 )
+text = "Cultivate"
+
+[node name="BodyButton" type="Button" parent="TouchControls"]
+rect_position = Vector2( 1600, 1052 )
+rect_size = Vector2( 180, 52 )
+text = "Body"
+
+[node name="InventoryButton" type="Button" parent="TouchControls"]
+rect_position = Vector2( 1410, 936 )
+rect_size = Vector2( 180, 52 )
+text = "Inventory"
+
+[node name="SaveButton" type="Button" parent="TouchControls"]
+rect_position = Vector2( 1410, 994 )
+rect_size = Vector2( 180, 52 )
+text = "Save"
+
+[node name="JumpButton" type="Button" parent="TouchControls"]
+rect_position = Vector2( 1410, 1052 )
+rect_size = Vector2( 180, 52 )
+text = "Jump"
+
+[node name="SprintButton" type="Button" parent="TouchControls"]
+rect_position = Vector2( 1410, 820 )
+rect_size = Vector2( 180, 52 )
+text = "Sprint"
