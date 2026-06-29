@@ -1,0 +1,28 @@
+name: Android Build
+
+on:
+  push:
+    branches: ["master", "main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    container:
+      image: barichello/godot-ci:3.2.3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Setup export templates
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/
+          mv /root/.local/share/godot/export_templates/3.2.3.stable ~/.local/share/godot/export_templates/3.2.3.stable
+      - name: Build Android APK
+        run: |
+          mkdir -p build/android
+          godot3 --headless --verbose --export "Android" "build/android/LuoKaiOpenWorld.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/android

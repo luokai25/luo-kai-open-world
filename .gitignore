@@ -1,0 +1,6 @@
+imported/
+.export/
+.cache/
+build/
+android/build/
+.github_workflow_hint
