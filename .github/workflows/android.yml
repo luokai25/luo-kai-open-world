@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     container:
-      image: barichello/godot-ci:3.2.3
+      image: abarichello/godot-ci:3.2.3
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,7 +23,7 @@ jobs:
       - name: Build Android APK
         run: |
           mkdir -p build/android
-          godot --headless --verbose --export-debug "Android" "build/android/LuoKaiOpenWorld-debug.apk"
+          godot --headless --verbose --export "Android" "build/android/LuoKaiOpenWorld.apk"
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk
