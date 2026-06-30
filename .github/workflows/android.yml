@@ -21,8 +21,8 @@ jobs:
       - name: Download Android export templates
         run: |
           mkdir -p ~/.local/share/godot/templates/3.2.3.stable
-          curl -L -o /tmp/export_templates.tpz "https://downloads.tuxfamily.org/godotengine/3.2.3/Godot_v3.2.3-stable_export_templates.tpz"
-          unzip /tmp/export_templates.tpz -d /tmp/godot_templates
+          curl -L -o /tmp/export_templates.zip "https://github.com/godotengine/godot/releases/download/3.2.3-stable/Godot_v3.2.3-stable_export_templates.tpz"
+          unzip /tmp/export_templates.zip -d /tmp/godot_templates
           cp /tmp/godot_templates/templates/*.apk ~/.local/share/godot/templates/3.2.3.stable/
           ls -la ~/.local/share/godot/templates/3.2.3.stable/
       - name: Configure editor settings
