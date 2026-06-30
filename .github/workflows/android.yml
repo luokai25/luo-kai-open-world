@@ -1,0 +1,48 @@
+name: Android Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["master", "main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    container:
+      image: barichello/godot-ci:3.2.3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download Android export templates
+        run: |
+          mkdir -p ~/.local/share/godot/templates/3.2.3.stable
+          curl -L -o /tmp/export_templates.tpz \
+            "https://downloads.tuxfamily.org/godotengine/3.2.3/Godot_v3.2.3-stable_export_templates.tpz"
+          unzip /tmp/export_templates.tpz -d /tmp/godot_templates
+          cp /tmp/godot_templates/templates/*.apk ~/.local/share/godot/templates/3.2.3.stable/
+
+      - name: Configure Godot editor settings
+        run: |
+          mkdir -p ~/.config/godot
+          cat > ~/.config/godot/editor_settings-3.tres << 'EOF'
+[gd_resource type="EditorSettings" format=2]
+
+[resource]
+export/android/adb = "/usr/bin/adb"
+export/android/jarsigner = "/usr/lib/jvm/java-17-openjdk-amd64/bin/jarsigner"
+export/android/debug_keystore = "/root/debug.keystore"
+export/android/debug_keystore_user = "androiddebugkey"
+export/android/debug_keystore_pass = "android"
+EOF
+
+      - name: Build Android APK
+        run: |
+          mkdir -p build/android
+          godot --headless --verbose --export "Android" "build/android/LuoKaiOpenWorld.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/android/LuoKaiOpenWorld.apk
