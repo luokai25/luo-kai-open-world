@@ -42,11 +42,11 @@ jobs:
           EOF
       - name: Build Android APK
         run: |
+          keytool -genkeypair -keystore /tmp/android-debug.keystore -alias androiddebugkey -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000 -storetype JKS
           mkdir -p build/android
           godot --headless --verbose --export-debug "Android" "build/android/LuoKaiOpenWorld-raw.apk"
       - name: Align and sign APK
         run: |
-          keytool -genkeypair -keystore /tmp/android-debug.keystore -alias androiddebugkey -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000 -storetype JKS
           zipalign -f -p 4 build/android/LuoKaiOpenWorld-raw.apk build/android/LuoKaiOpenWorld-aligned.apk
           apksigner sign \
             --ks /tmp/android-debug.keystore \
