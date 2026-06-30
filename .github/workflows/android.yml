@@ -34,7 +34,7 @@ jobs:
           [resource]
           export/android/adb = "/usr/bin/adb"
           export/android/jarsigner = "/usr/bin/jarsigner"
-          export/android/debug_keystore = "/root/debug.keystore"
+          export/android/debug_keystore = "/tmp/android-debug.keystore"
           export/android/debug_keystore_user = "androiddebugkey"
           export/android/debug_keystore_pass = "android"
           export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"
@@ -43,7 +43,22 @@ jobs:
       - name: Build Android APK
         run: |
           mkdir -p build/android
-          godot --headless --verbose --export-debug "Android" "build/android/LuoKaiOpenWorld.apk"
+          godot --headless --verbose --export-debug "Android" "build/android/LuoKaiOpenWorld-raw.apk"
+      - name: Align and sign APK
+        run: |
+          keytool -genkeypair -keystore /tmp/android-debug.keystore -alias androiddebugkey -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000 -storetype JKS
+          zipalign -f -p 4 build/android/LuoKaiOpenWorld-raw.apk build/android/LuoKaiOpenWorld-aligned.apk
+          apksigner sign \
+            --ks /tmp/android-debug.keystore \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --v1-signing-enabled true \
+            --v2-signing-enabled true \
+            --v3-signing-enabled true \
+            --out build/android/LuoKaiOpenWorld.apk \
+            build/android/LuoKaiOpenWorld-aligned.apk
+          apksigner verify --verbose --print-certs build/android/LuoKaiOpenWorld.apk
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk
