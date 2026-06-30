@@ -33,11 +33,11 @@ jobs:
 
           [resource]
           export/android/adb = "/usr/bin/adb"
-          export/android/jarsigner = "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/jarsigner"
+          export/android/jarsigner = "/usr/bin/jarsigner"
           export/android/debug_keystore = "/root/debug.keystore"
           export/android/debug_keystore_user = "androiddebugkey"
           export/android/debug_keystore_pass = "android"
-          export/android/java_sdk_path = "/usr/lib/jvm/java-8-openjdk-amd64"
+          export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"
           export/android/android_sdk_path = "/usr/lib/android-sdk"
           EOF
       - name: Build Android APK
