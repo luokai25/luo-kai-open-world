@@ -31,19 +31,25 @@ jobs:
           keytool -genkeypair -keystore /root/debug.keystore -alias androiddebugkey -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000 -storetype JKS
       - name: Configure editor settings
         run: |
-          mkdir -p ~/.config/godot
-          cat > ~/.config/godot/editor_settings-3.tres << 'EOF'
-[gd_resource type="EditorSettings" format=2]
+          python - <<'PY'
+          from pathlib import Path
+          from textwrap import dedent
+          content = dedent("""\
+          [gd_resource type="EditorSettings" format=2]
 
-[resource]
-export/android/adb = "/usr/bin/adb"
-export/android/jarsigner = "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/jarsigner"
-export/android/debug_keystore = "/root/debug.keystore"
-export/android/debug_keystore_user = "androiddebugkey"
-export/android/debug_keystore_pass = "android"
-export/android/java_sdk_path = "/usr/lib/jvm/java-8-openjdk-amd64"
-export/android/android_sdk_path = "/usr/lib/android-sdk"
-EOF
+          [resource]
+          export/android/adb = "/usr/bin/adb"
+          export/android/jarsigner = "/usr/bin/jarsigner"
+          export/android/debug_keystore = "/root/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"
+          export/android/android_sdk_path = "/usr/lib/android-sdk"
+          """)
+          path = Path.home() / ".config/godot/editor_settings-3.tres"
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text(content)
+          PY
       - name: Build Android APK
         run: |
           mkdir -p build/android
