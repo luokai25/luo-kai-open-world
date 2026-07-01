@@ -47,7 +47,12 @@ jobs:
           godot --headless --verbose --export-debug "Android" "build/android/LuoKaiOpenWorld-raw.apk"
       - name: Align and sign APK
         run: |
-          zipalign -f -p 4 build/android/LuoKaiOpenWorld-raw.apk build/android/LuoKaiOpenWorld-aligned.apk
+          if command -v zipalign >/dev/null 2>&1; then
+            zipalign -f -p 4 build/android/LuoKaiOpenWorld-raw.apk build/android/LuoKaiOpenWorld-aligned.apk
+            input_apk=build/android/LuoKaiOpenWorld-aligned.apk
+          else
+            input_apk=build/android/LuoKaiOpenWorld-raw.apk
+          fi
           apksigner sign \
             --ks /tmp/android-debug.keystore \
             --ks-key-alias androiddebugkey \
@@ -57,7 +62,7 @@ jobs:
             --v2-signing-enabled true \
             --v3-signing-enabled true \
             --out build/android/LuoKaiOpenWorld.apk \
-            build/android/LuoKaiOpenWorld-aligned.apk
+            "$input_apk"
           apksigner verify --verbose --print-certs build/android/LuoKaiOpenWorld.apk
       - uses: actions/upload-artifact@v4
         with:
