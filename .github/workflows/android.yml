@@ -25,35 +25,40 @@ jobs:
           unzip /tmp/export_templates.zip -d /tmp/godot_templates
           cp /tmp/godot_templates/templates/*.apk ~/.local/share/godot/templates/3.2.3.stable/
           ls -la ~/.local/share/godot/templates/3.2.3.stable/
-      - name: Create debug keystore
-        run: |
-          rm -f /root/debug.keystore
-          keytool -genkeypair -keystore /root/debug.keystore -alias androiddebugkey -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000 -storetype JKS
       - name: Configure editor settings
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          from textwrap import dedent
-          content = dedent("""\
-          [gd_resource type="EditorSettings" format=2]
+          mkdir -p ~/.config/godot
+          cat > ~/.config/godot/editor_settings-3.tres << 'EOF'
+[gd_resource type="EditorSettings" format=2]
 
-          [resource]
-          export/android/adb = "/usr/bin/adb"
-          export/android/jarsigner = "/usr/bin/jarsigner"
-          export/android/debug_keystore = "/root/debug.keystore"
-          export/android/debug_keystore_user = "androiddebugkey"
-          export/android/debug_keystore_pass = "android"
-          export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"
-          export/android/android_sdk_path = "/usr/lib/android-sdk"
-          """)
-          path = Path.home() / ".config/godot/editor_settings-3.tres"
-          path.parent.mkdir(parents=True, exist_ok=True)
-          path.write_text(content)
-          PY
+[resource]
+export/android/adb = "/usr/bin/adb"
+export/android/jarsigner = "/usr/bin/jarsigner"
+export/android/debug_keystore = "/tmp/android-debug.keystore"
+export/android/debug_keystore_user = "androiddebugkey"
+export/android/debug_keystore_pass = "android"
+export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"
+export/android/android_sdk_path = "/usr/lib/android-sdk"
+EOF
       - name: Build Android APK
         run: |
+          keytool -genkeypair -keystore /tmp/android-debug.keystore -alias androiddebugkey -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000 -storetype JKS
           mkdir -p build/android
-          godot --headless --verbose --export-debug "Android" "build/android/LuoKaiOpenWorld.apk"
+          godot --headless --verbose --export-debug "Android" "build/android/LuoKaiOpenWorld-raw.apk"
+      - name: Align and sign APK
+        run: |
+          zipalign -f -p 4 build/android/LuoKaiOpenWorld-raw.apk build/android/LuoKaiOpenWorld-aligned.apk
+          apksigner sign \
+            --ks /tmp/android-debug.keystore \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --v1-signing-enabled true \
+            --v2-signing-enabled true \
+            --v3-signing-enabled true \
+            --out build/android/LuoKaiOpenWorld.apk \
+            build/android/LuoKaiOpenWorld-aligned.apk
+          apksigner verify --verbose --print-certs build/android/LuoKaiOpenWorld.apk
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk
