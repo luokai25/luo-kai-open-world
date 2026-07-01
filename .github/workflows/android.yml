@@ -25,6 +25,10 @@ jobs:
           unzip /tmp/export_templates.zip -d /tmp/godot_templates
           cp /tmp/godot_templates/templates/*.apk ~/.local/share/godot/templates/3.2.3.stable/
           ls -la ~/.local/share/godot/templates/3.2.3.stable/
+      - name: Create debug keystore
+        run: |
+          rm -f /root/debug.keystore
+          keytool -genkeypair -keystore /root/debug.keystore -alias androiddebugkey -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000 -storetype JKS
       - name: Configure editor settings
         run: |
           mkdir -p ~/.config/godot
