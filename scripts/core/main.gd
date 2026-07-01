@@ -8,6 +8,8 @@ onready var npc = $World/NPC
 onready var hud = $HUD
 onready var touch_controls = $TouchControls
 
+var intro_visible = false
+
 func _ready():
 	add_to_group("main_controller")
 	if enemy and enemy.has_method("set_target"):
@@ -23,8 +25,31 @@ func _ready():
 	if world and world.has_method("get_zone_profile"):
 		_apply_world_profile(world.get_zone_profile())
 	load_game()
+	_show_intro()
+
+func _input(event):
+	if not intro_visible:
+		return
+	if (event is InputEventKey and event.pressed) or (event is InputEventMouseButton and event.pressed) or (event is InputEventScreenTouch and event.pressed):
+		_hide_intro()
+
+func _show_intro():
+	intro_visible = true
+	if hud and hud.has_method("set_intro_visible"):
+		hud.set_intro_visible(true, "Spirit Forest Awakens", "You wake at the edge of the Spirit Forest. Follow Elder Shen, gather qi, train your body, and break through your realm.", "Objective: speak with Elder Shen and begin your first request.")
+	if hud and hud.has_method("set_request_text"):
+		hud.set_request_text("Objective: Find Elder Shen")
 	if hud and hud.has_method("flash_message"):
-		hud.flash_message("Luo Kai: Open World ready")
+		hud.flash_message("The Spirit Forest stirs")
+	yield(get_tree().create_timer(3.0), "timeout")
+	_hide_intro()
+
+func _hide_intro():
+	if not intro_visible:
+		return
+	intro_visible = false
+	if hud and hud.has_method("set_intro_visible"):
+		hud.set_intro_visible(false)
 
 func _apply_world_profile(profile):
 	if not hud or typeof(profile) != TYPE_DICTIONARY:

@@ -101,7 +101,7 @@ text = "Talk to NPCs for requests"
 
 [node name="RequestLabel" type="Label" parent="HUD"]
 rect_position = Vector2( 16, 208 )
-text = "No request active"
+text = "Objective: Find Elder Shen"
 
 [node name="InventoryLabel" type="Label" parent="HUD"]
 rect_position = Vector2( 16, 232 )
@@ -116,6 +116,29 @@ text = "Inventory empty"
 [node name="MessageLabel" type="Label" parent="HUD"]
 rect_position = Vector2( 16, 520 )
 text = "Ready"
+
+[node name="IntroLayer" type="CanvasLayer" parent="HUD"]
+visible = true
+
+[node name="IntroBackdrop" type="ColorRect" parent="HUD/IntroLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 0.74 )
+
+[node name="IntroTitle" type="Label" parent="HUD/IntroLayer"]
+rect_position = Vector2( 96, 120 )
+rect_size = Vector2( 900, 80 )
+text = "Spirit Forest Awakens"
+
+[node name="IntroSubtitle" type="Label" parent="HUD/IntroLayer"]
+rect_position = Vector2( 96, 200 )
+rect_size = Vector2( 1000, 120 )
+text = "You wake at the edge of the Spirit Forest. Find Elder Shen, gather qi, train your body, and break through your realm."
+
+[node name="IntroHint" type="Label" parent="HUD/IntroLayer"]
+rect_position = Vector2( 96, 300 )
+rect_size = Vector2( 1000, 80 )
+text = "Tap anywhere to begin, then speak to Elder Shen to start the first request."
 
 [node name="TouchControls" type="CanvasLayer" parent="."]
 script = ExtResource( 4 )

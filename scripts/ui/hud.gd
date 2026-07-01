@@ -12,6 +12,10 @@ onready var inventory_details = null
 onready var message_label = null
 onready var landmark_label = null
 onready var request_label = null
+onready var intro_layer = null
+onready var intro_title = null
+onready var intro_subtitle = null
+onready var intro_hint = null
 
 func _ready():
 	bind(get_parent().get_node_or_null("World/Player"), get_parent().get_node_or_null("World/WorldState"))
@@ -41,6 +45,14 @@ func bind(player, world_state = null):
 		inventory_details = $InventoryDetails
 	if has_node("MessageLabel"):
 		message_label = $MessageLabel
+	if has_node("IntroLayer"):
+		intro_layer = $IntroLayer
+	if has_node("IntroLayer/IntroTitle"):
+		intro_title = $IntroLayer/IntroTitle
+	if has_node("IntroLayer/IntroSubtitle"):
+		intro_subtitle = $IntroLayer/IntroSubtitle
+	if has_node("IntroLayer/IntroHint"):
+		intro_hint = $IntroLayer/IntroHint
 	update_values(player, world_state)
 
 func update_values(player, world_state = null):
@@ -89,6 +101,16 @@ func set_inventory_visible(visible, text=""):
 	if inventory_details:
 		inventory_details.visible = visible
 		inventory_details.text = text if text != "" else "Inventory empty"
+
+func set_intro_visible(visible, title = "", subtitle = "", hint = ""):
+	if intro_title and title != "":
+		intro_title.text = title
+	if intro_subtitle and subtitle != "":
+		intro_subtitle.text = subtitle
+	if intro_hint and hint != "":
+		intro_hint.text = hint
+	if intro_layer:
+		intro_layer.visible = visible
 
 func flash_message(text):
 	if message_label:
