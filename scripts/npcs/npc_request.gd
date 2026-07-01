@@ -27,6 +27,9 @@ var accepted = false
 var request_id = "elder_shen_qi_stones"
 var affinity = 0
 
+func set_player(target_player):
+	player = target_player
+
 func _ready():
 	add_to_group("npcs")
 	connect("body_entered", self, "_on_body_entered")
@@ -92,16 +95,9 @@ func _show_need_more():
 func _complete_request(target):
 	fulfilled = true
 	accepted = true
-	match request_type:
-		RequestType.QUEST, RequestType.DELIVER, RequestType.ARTIFACT:
-			for i in range(required_count):
-				target.remove_item(required_item)
-		RequestType.TRAIN:
-			target.train_body(reward_body)
-		RequestType.ELDER_TALK:
-			target.gather_qi(reward_qi)
-		RequestType.HUNT:
-			target.gather_qi(reward_qi)
+	if request_type in [RequestType.QUEST, RequestType.DELIVER, RequestType.ARTIFACT]:
+		for i in range(required_count):
+			target.remove_item(required_item)
 	if reward_qi > 0:
 		target.gather_qi(reward_qi)
 	if reward_body > 0:

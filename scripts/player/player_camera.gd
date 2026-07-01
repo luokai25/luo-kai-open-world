@@ -10,11 +10,17 @@ var target
 var yaw = 180.0
 var pitch = -18.0
 
+func set_target_path(path):
+	target_path = path
+	target = get_node_or_null(target_path) if target_path != NodePath("") else null
+
 func _ready():
 	if target_path != NodePath(""):
 		target = get_node_or_null(target_path)
 
 func _process(delta):
+	if not target and target_path != NodePath(""):
+		target = get_node_or_null(target_path)
 	if not target:
 		return
 	var desired = target.global_transform.origin
